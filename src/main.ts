@@ -6,11 +6,13 @@ import { Logger } from '@nestjs/common';
 import { join } from "path";
 
 import { AppModule } from './app.module';
+import { initAdapters } from './adapters/redis-io.adapter';
+//import { RedisIoAdapter } from './adapters/redis-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors();
-
+  //app.useWebSocketAdapter(new RedisIoAdapter(app));
+  //initAdapters(app);
   const options = new DocumentBuilder()
     .setTitle('Task example')
     .setDescription('The task API description')

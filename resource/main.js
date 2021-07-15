@@ -68,7 +68,7 @@ const app = new Vue({
   },
   created() {
     this.activeRoom = this.selected;
-    this.socket = io('http://localhost:3400/realtime', {
+    this.socket = io('http://localhost:3420/realtime', {
       transportOptions: {
         withCredentials: true,
         polling: {
@@ -97,6 +97,9 @@ const app = new Vue({
       }
     });
     this.socket.on('msgToClient', (message) => {
+      console.log('***** recibo mensaje ******');
+      console.log(message);
+      console.log('*****************************');
       if (message) {
         this.receivedMessage(message)
       } else {
