@@ -10,12 +10,13 @@ import { SharedModule } from './shared/shared.module';
 
 import appConfig from './config/app.config';
 import dbConfig from './config/db.config';
+import redisConfig from './config/redis.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, dbConfig]
+      load: [appConfig, dbConfig, redisConfig]
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -25,20 +26,38 @@ import dbConfig from './config/db.config';
       inject: [ConfigService],
     }),
     OwnerModule,
-    RedisModule.forRoot([
-      {
-        name: 'REDIS_SUBSCRIBER_CLIENT',
-        host: '127.0.0.1',
-        port: 7001,
-        password: '',
+    RedisModule.forAsync(
+      [
+        {
+          name: 'REDIS_PUBLISHER_CLIENT',
+        },
+        {
+          name: 'REDIS_SUBSCRIBER_CLIENT',
+        },
+      ]
+    , {
+      useFactory: (configService: ConfigService) => {
+        const config = configService.get('redisConfig')
+        return [
+          {
+            name: 'REDIS_PUBLISHER_CLIENT',
+            host: config.host,
+            port: config.port,
+            username: config.username,
+            password: config.password,
+          },
+           {
+            name: 'REDIS_SUBSCRIBER_CLIENT',
+            host: config.host,
+            port: config.port,
+            username: config.username,
+            password: config.password,
+          }, 
+          
+        ]
       },
-      {
-        name: 'REDIS_PUBLISHER_CLIENT',
-        host: '127.0.0.1',
-        port: 7001,
-        password: ''
-      }
-    ]),
+      inject: [ConfigService]
+    }),
     SharedModule,
   ],
   controllers: [AppController],
