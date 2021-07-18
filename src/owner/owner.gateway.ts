@@ -35,24 +35,22 @@ export class OwnerGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('msgToServer')
   public async handleMessage(client: Socket, payload: any) {
     const owner = await this.service.create(payload);
-    return { event: 'msgToClient', data: owner };
+    return { event: 'msgToClient', data: owner, sender: owner.uuid };
   };
 
   @SubscribeMessage('joinRoom')
   public async joinRoom(client: Socket, uuid: string) {
-    const userJwt = client.handshake.headers['authorization'];
     client.join(uuid);
     client.emit('joinedRoom', uuid);
-    this.logger.log(`Client JOIN: ${client.id} - with ${userJwt} - room ${uuid}`);
-    const owner = await this.service.getMessagesActive(uuid);
-    return { event: 'msgToClient', data: owner };
+    this.logger.log(`Client JOIN: ${client.id} - room ${uuid}`);
   };
 
   @SubscribeMessage('leaveRoom')
   public async leaveRoom(client: Socket, room: string): Promise<void> {
     const userJwt = client.handshake.headers['authorization'];
-    this.logger.log(`Client: ${client.id} - with ${userJwt}`);
+    this.logger.log(`Client LEAVE: ${client.id} - room ${room}`);
     client.leave(room);
+    this.socketStateService.remove(userJwt, client);
     client.emit('leftRoomServer', room);
   }
 
@@ -62,17 +60,14 @@ export class OwnerGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
   public async handleDisconnect(client: Socket): Promise<void> {
     const userJwt = client.handshake.headers['authorization'];
-    //await this.redis.remove(userJwt, client.id);
     this.socketStateService.remove(userJwt, client);
-
     client.removeAllListeners('disconnect');
-    return this.logger.log(`Client disconnected: ${client.id} - with ${userJwt}`);
+    return this.logger.log(`Client disconnected: ${client.id} - JWT ${userJwt}`);
   }
 
   public async handleConnection(client: Socket): Promise<void> {
-    const idUser = client.handshake.headers['authorization'];
-    this.socketStateService.add(idUser, client);
-    //await this.redis.register(idUser, client.id);
-    return this.logger.log(`Client connected: ${client.id} - with ${idUser}`);
+    const userJwt = client.handshake.headers['authorization'];
+    this.socketStateService.add(userJwt, client);
+    return this.logger.log(`Client connected: ${client.id} - JWT ${userJwt}`);
   }
 }

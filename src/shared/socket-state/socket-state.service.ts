@@ -6,6 +6,7 @@ export class SocketStateService {
   private socketState = new Map<string, Socket[]>();
 
   public remove(userId: string, socket: Socket): boolean {
+    console.log(`Socket state remove user: ${userId}`);
     const existingSockets = this.socketState.get(userId);
 
     if (!existingSockets) {
@@ -24,17 +25,21 @@ export class SocketStateService {
   }
 
   public add(userId: string, socket: Socket): boolean {
+    console.log(`Socket state add user: ${userId}`);
     const existingSockets = this.socketState.get(userId) || [];
 
     const sockets = [...existingSockets, socket];
-
+    console.log(`sockets actuales: ${sockets.length}`);
     this.socketState.set(userId, sockets);
 
     return true;
   }
 
   public get(userId: string): Socket[] {
-    return this.socketState.get(userId) || [];
+    console.log(`Socket state get user: ${userId}`);
+    const sockets = this.socketState.get(userId) || []
+    console.log(`sockets actuales: ${sockets.length}`);
+    return sockets;
   }
 
   public getAll(): Socket[] {

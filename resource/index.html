@@ -22,12 +22,23 @@
                 <br>
                 <div id="status"></div>
                 <div id="chat">
-                    <label for="room">Seleccionar usuario:</label>
-                    <select class="form-control" id="room" v-model="selected" @change="onChange($event)">
-                        <option v-for="room of listRooms" :value="room">{{ room }}</option>
+                    <label for="user">Usuario actual:</label>
+                    <select class="form-control" id="user" v-model="sender" @change="onChangeUserSender($event)">
+                        <option v-for="user of usersList" :value="user">{{ user }}</option>
                     </select>
                     <br>
-                    <label for="messages">Mensajes sin leer:</label>
+                    <button :disabled="connectionStatus ? '' : disabled" id="connect" class="btn"
+                        @click.prevent="connectar">Conectar</button>
+                    <button :disabled="!connectionStatus ? '' : disabled" id="disconnect" class="btn"
+                        @click.prevent="connectar">Desconectar</button>
+                    <br>
+                    <label for="destination">Usuario destino:</label>
+                    <select class="form-control" id="destination" v-model="destination"
+                        @change="onChangeUserDestination($event)" :disabled="connectionStatus ? '' : disabled">
+                        <option v-for="destination of usersList" :value="destination">{{ destination }}</option>
+                    </select>
+                    <br>
+                    <label for="messages">Mensajes sin leer de {{ userDestination }}:</label>
                     <div class="card">
                         <div id="messages" class="card-block">
                             <ul>

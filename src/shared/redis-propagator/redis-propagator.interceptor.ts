@@ -14,18 +14,20 @@ import { RedisPropagatorService } from './redis-propagator.service';
 
 @Injectable()
 export class RedisPropagatorInterceptor<T> implements NestInterceptor<T, WsResponse<T>> {
-  public constructor(private readonly redisPropagatorService: RedisPropagatorService) {}
+  public constructor(private readonly redisPropagatorService: RedisPropagatorService) { }
 
   public intercept(context: ExecutionContext, next: CallHandler): Observable<WsResponse<T>> {
     const socket = context.switchToWs().getClient();
-    const userId =socket.handshake.headers['authorization'];
+    //const userId = socket.handshake.headers['authorization'];
     return next.handle().pipe(
       tap((data) => {
-        this.redisPropagatorService.propagateEvent({
-          ...data,
-          socketId: socket.id,
-          userId,
-        });
+        if(data){
+          this.redisPropagatorService.propagateEvent({
+            ...data,
+            socketId: socket.id,
+            userId: data.sender
+          });
+        }
       }),
     );
   }

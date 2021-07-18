@@ -33,31 +33,31 @@ import redisConfig from './config/redis.config';
         },
         {
           name: 'REDIS_SUBSCRIBER_CLIENT',
+        }
+      ],
+      {
+        useFactory: (configService: ConfigService) => {
+          const config = configService.get('redisConfig')
+          return [
+            {
+              name: 'REDIS_PUBLISHER_CLIENT',
+              host: config.host,
+              port: config.port,
+              username: config.username,
+              password: config.password,
+            },
+            {
+              name: 'REDIS_SUBSCRIBER_CLIENT',
+              host: config.host,
+              port: config.port,
+              username: config.username,
+              password: config.password,
+            },
+
+          ]
         },
-      ]
-    , {
-      useFactory: (configService: ConfigService) => {
-        const config = configService.get('redisConfig')
-        return [
-          {
-            name: 'REDIS_PUBLISHER_CLIENT',
-            host: config.host,
-            port: config.port,
-            username: config.username,
-            password: config.password,
-          },
-           {
-            name: 'REDIS_SUBSCRIBER_CLIENT',
-            host: config.host,
-            port: config.port,
-            username: config.username,
-            password: config.password,
-          }, 
-          
-        ]
-      },
-      inject: [ConfigService]
-    }),
+        inject: [ConfigService]
+      }),
     SharedModule,
   ],
   controllers: [AppController],

@@ -3,10 +3,16 @@ const app = new Vue({
   data: {
     title: 'Emitir notificaciones "push"',
     text: '',
-    selected: 'usuario1',
+    sender: 'usuario1',
+    destination: 'usuario1',
     messages: [],
     socket: null,
-    activeRoom: '',
+    userSender: 'usuario1',
+    userDestination: 'usuario1',
+    connectionStatus: false,
+    showButtonConnect: "enabled",
+    showButtonDisconnect: "enabled",
+    connectionCreated: null,
     rooms: {
       general: false,
       roomA: false,
@@ -14,7 +20,7 @@ const app = new Vue({
       roomC: false,
       roomD: false,
     },
-    listRooms: [
+    usersList: [
       "usuario1",
       "usuario2",
       "usuario3",
@@ -23,16 +29,96 @@ const app = new Vue({
     ]
   },
   methods: {
-    onChange(event) {
-      this.socket.emit('leaveRoom', this.activeRoom);
-      this.activeRoom = event.target.value;
-      this.socket.emit('joinRoom', this.activeRoom);
+    socketDisconnect(){
+      this.socket.disconnect();
     },
+    socketConnect() {
+      this.socket = io('http://localhost:3420/realtime', {
+        transportOptions: {
+          withCredentials: true,
+          polling: {
+            extraHeaders: {
+              Authorization: this.userDestination,
 
-    sendMessage() {
-      if (this.validateInput()) {
+              methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+              withCredentials: true,
+              cors: {
+
+                methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+                withCredentials: true
+              }
+            }
+          },
+          cors: {
+
+            methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+            withCredentials: true
+          }
+        },
+        cors: {
+
+          methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+          withCredentials: true,
+        }
+      });
+      this.socket.on('msgToClient', (message) => {
+        if (message) {
+          this.receivedMessage(message)
+        } else {
+          this.messages = []
+        }
+      });
+
+      this.socket.on('connect', () => {
+        // this.check();
+      });
+
+      this.socket.on('joinedRoom', (room) => {
+        this.rooms[room] = true;
+      });
+
+      this.socket.on('leftRoomServer', (room) => {
+        this.rooms[room] = false;
+      });
+    },
+    connectar() {
+      this.connectionStatus = !(this.connectionStatus)
+      if (this.connectionStatus) {
+        this.socketConnect()
+        this.socket.emit('joinRoom', this.userDestination);
         const message = {
-          uuid: this.activeRoom,
+          uuid: this.userDestination
+        };
+        this.socket.emit('msgToServer', message);
+      } else {
+        this.socket.emit('leaveRoom', this.userDestination);
+        this.socketDisconnect()
+        this.messages = [];
+      }
+    },
+    onChangeUserSender(event) {
+      this.userSender = event.target.value;
+      if (this.connectionStatus) {
+        this.socket.emit('leaveRoom', this.userSender);
+        this.socket.emit('joinRoom', this.userSender);
+/*         const message = {
+          uuid: this.userSender
+        };
+        this.socket.emit('msgToServer', message); */
+      }
+    },
+    onChangeUserDestination(event) {
+      this.userDestination = event.target.value;
+      const message = {
+        uuid: this.userDestination
+      };
+      this.socket.emit('msgToServer', message);
+    },
+    sendMessage() {
+      if (this.validateInput() && this.connectionStatus) {
+        console.log(`enviado datos a ${this.userDestination}`)
+        const message = {
+          uuid: this.userDestination,
           messages: [{ message: this.text }],
         };
         this.socket.emit('msgToServer', message);
@@ -49,57 +135,44 @@ const app = new Vue({
     validateInput() {
       return this.text.length > 0
     },
-    check() {
-      if (this.isMemberOfActiveRoom) {
-        this.socket.emit('leaveRoom', this.activeRoom);
-      } else {
-        this.socket.emit('joinRoom', this.activeRoom);
-        const message = {
-          uuid: this.activeRoom
-        };
-        this.socket.emit('msgToServer', message);
-      }
-    }
   },
   computed: {
     isMemberOfActiveRoom() {
-      return this.rooms[this.activeRoom];
+      return this.rooms[this.userSender];
     }
   },
   created() {
-    this.activeRoom = this.selected;
+    /* const numeroServidor= Math.floor(Math.random() * 99999999999999) + 1;
+    this.connectionCreated = true;
     this.socket = io('http://localhost:3420/realtime', {
       transportOptions: {
         withCredentials: true,
         polling: {
           extraHeaders: {
-            Authorization: this.activeRoom,
-            
+            Authorization: numeroServidor,
+
             methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
             withCredentials: true,
             cors: {
-              
+
               methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
               withCredentials: true
             }
           }
         },
         cors: {
-          
+
           methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
           withCredentials: true
         }
       },
       cors: {
-        
+
         methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
         withCredentials: true,
       }
     });
     this.socket.on('msgToClient', (message) => {
-      console.log('***** recibo mensaje ******');
-      console.log(message);
-      console.log('*****************************');
       if (message) {
         this.receivedMessage(message)
       } else {
@@ -108,7 +181,7 @@ const app = new Vue({
     });
 
     this.socket.on('connect', () => {
-      this.check();
+      // this.check();
     });
 
     this.socket.on('joinedRoom', (room) => {
@@ -117,6 +190,6 @@ const app = new Vue({
 
     this.socket.on('leftRoomServer', (room) => {
       this.rooms[room] = false;
-    });
+    }); */
   }
 });
