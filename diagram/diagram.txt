@@ -1,0 +1,58 @@
+title NestJS gateway with cors by Paulo Ariel Pareja
+
+actor Rest api
+actor Websocket
+actor Redis
+actor MongoDb
+
+Rest api->service: Post to "owner/"
+service->MongoDb: get owner by uuid
+MongoDb->service: return result
+alt Resut not exist owner required
+service->MongoDb: save new owner with messages
+else
+service->MongoDb: add messages to exist owner
+end
+MongoDb->service: return result
+service->Rest api: return response
+
+Rest api->service: Get to "owner/:uuid"
+service->MongoDb: get owner by uuid
+MongoDb->service: return result
+service->Rest api: return response
+
+Rest api->service: Get to "owner/:uuid/:id"
+service->MongoDb: get owner by uuid and filter messages by id
+MongoDb->service: return result
+service->Rest api: return response
+
+Rest api->service: Delete to "owner/:uuid/:id"
+service->MongoDb: update messages with aggregate removing message selected
+MongoDb->service: return result
+service->Rest api: return response
+
+
+Websocket->gateway: on connect
+gateway->socketStateService: register socket and client
+
+Websocket->gateway: on disconnect
+gateway->socketStateService: unregister socket and client
+
+Websocket->gateway: on joinRoom
+gateway->socketServer: join to room
+
+Websocket->gateway: on leaveRoom
+gateway->socketServer: leave to room
+socketServer->socketStateService: remove socket client
+gateway->interceptor: emit event
+interceptor->Redis: publish event for others services listeners
+Redis->gateway: broadcast event
+gateway->Websocket: emit event
+
+Websocket->gateway: msgToServer
+gateway->service: Get to "owner/:uuid/:id"
+service->gateway: return results
+gateway->interceptor: emit event
+interceptor->Redis: publish event for others services listeners
+Redis->gateway: broadcast event
+gateway->Websocket: emit event
