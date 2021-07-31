@@ -1,0 +1,373 @@
+{
+	"info": {
+		"_postman_id": "7ce37205-b7b3-4206-8630-d4cb97535b23",
+		"name": "nest-notifications",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "crear owner",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"uuid\": \"usuario1\",\r\n    \"messages\": [\r\n        {\"message\": \"mensaje test 2\"}\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3420/owner",
+					"host": [
+						"localhost"
+					],
+					"port": "3420",
+					"path": [
+						"owner"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "crear owner",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uuid\": \"usuario1\",\r\n    \"messages\": [\r\n        {\"message\": \"mensaje test 2\"}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3420/owner",
+							"host": [
+								"localhost"
+							],
+							"port": "3420",
+							"path": [
+								"owner"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "336"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"150-AMSr8nentTMzlkJZez0mnLdh8d8\""
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 31 Jul 2021 05:07:37 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"ok\",\n    \"owner\": {\n        \"_id\": \"6104da87d2f29d38a08f61a9\",\n        \"uuid\": \"usuario1\",\n        \"messages\": [\n            {\n                \"_id\": \"6104da87d2f29d38a08f61aa\",\n                \"message\": \"mensaje test\",\n                \"createdAt\": \"2021-07-31T05:07:19.610Z\"\n            },\n            {\n                \"_id\": \"6104da99d2f29d38a08f61ae\",\n                \"message\": \"mensaje test 2\",\n                \"createdAt\": \"2021-07-31T05:07:37.904Z\"\n            }\n        ],\n        \"createdAt\": \"2021-07-31T05:07:19.610Z\",\n        \"__v\": 0\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "obtener todos los mensajes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3420/owner/:uuid",
+					"host": [
+						"localhost"
+					],
+					"port": "3420",
+					"path": [
+						"owner",
+						":uuid"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "usuario1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "obtener todos los mensajes",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3420/owner/:uuid",
+							"host": [
+								"localhost"
+							],
+							"port": "3420",
+							"path": [
+								"owner",
+								":uuid"
+							],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": "usuario1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "344"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"158-tyw7STAvPauU6wLAovE2+mH11a8\""
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 31 Jul 2021 05:08:02 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"ok\",\n    \"qty\": 2,\n    \"owner\": {\n        \"_id\": \"6104da87d2f29d38a08f61a9\",\n        \"uuid\": \"usuario1\",\n        \"messages\": [\n            {\n                \"_id\": \"6104da87d2f29d38a08f61aa\",\n                \"message\": \"mensaje test\",\n                \"createdAt\": \"2021-07-31T05:07:19.610Z\"\n            },\n            {\n                \"_id\": \"6104da99d2f29d38a08f61ae\",\n                \"message\": \"mensaje test 2\",\n                \"createdAt\": \"2021-07-31T05:07:37.904Z\"\n            }\n        ],\n        \"createdAt\": \"2021-07-31T05:07:19.610Z\",\n        \"__v\": 1\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "obtener mensaje especifico",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3420/owner/:usuario/:id_mensaje",
+					"host": [
+						"localhost"
+					],
+					"port": "3420",
+					"path": [
+						"owner",
+						":usuario",
+						":id_mensaje"
+					],
+					"variable": [
+						{
+							"key": "usuario",
+							"value": "usuario1"
+						},
+						{
+							"key": "id_mensaje",
+							"value": "6104da87d2f29d38a08f61aa"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "obtener mensaje especifico",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3420/owner/:usuario/:id_mensaje",
+							"host": [
+								"localhost"
+							],
+							"port": "3420",
+							"path": [
+								"owner",
+								":usuario",
+								":id_mensaje"
+							],
+							"variable": [
+								{
+									"key": "usuario",
+									"value": "usuario1"
+								},
+								{
+									"key": "id_mensaje",
+									"value": "6104da87d2f29d38a08f61aa"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "126"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"7e-30YNVfTKse8zUHFQnVTcCdJ2ZMk\""
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 31 Jul 2021 05:08:26 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"ok\",\n    \"message\": [\n        {\n            \"_id\": \"6104da87d2f29d38a08f61aa\",\n            \"message\": \"mensaje test\",\n            \"createdAt\": \"2021-07-31T05:07:19.610Z\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "quitar mensaje",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3420/owner/:uuid/:msg_id",
+					"host": [
+						"localhost"
+					],
+					"port": "3420",
+					"path": [
+						"owner",
+						":uuid",
+						":msg_id"
+					],
+					"variable": [
+						{
+							"key": "uuid",
+							"value": "usuario1"
+						},
+						{
+							"key": "msg_id",
+							"value": "6104da87d2f29d38a08f61aa"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "quitar mensaje",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:3420/owner/:uuid/:msg_id",
+							"host": [
+								"localhost"
+							],
+							"port": "3420",
+							"path": [
+								"owner",
+								":uuid",
+								":msg_id"
+							],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": "usuario1"
+								},
+								{
+									"key": "msg_id",
+									"value": "6104da87d2f29d38a08f61aa"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "245"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"f5-fOrLDI9S2P5Ai/QN1NWJSZc2wtE\""
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 31 Jul 2021 05:08:43 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"ok\",\n    \"qty\": 1,\n    \"owner\": {\n        \"_id\": \"6104da87d2f29d38a08f61a9\",\n        \"uuid\": \"usuario1\",\n        \"messages\": [\n            {\n                \"_id\": \"6104da99d2f29d38a08f61ae\",\n                \"message\": \"mensaje test 2\",\n                \"createdAt\": \"2021-07-31T05:07:37.904Z\"\n            }\n        ],\n        \"createdAt\": \"2021-07-31T05:07:19.610Z\",\n        \"__v\": 1\n    }\n}"
+				}
+			]
+		}
+	]
+}
