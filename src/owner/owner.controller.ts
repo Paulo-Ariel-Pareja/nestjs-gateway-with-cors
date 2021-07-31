@@ -20,7 +20,7 @@ export class OwnerController {
     @Post('/')
     async create(@Body() dto: OwnerDto) {
         try {
-            const owner = await this.service.create(dto);
+            const owner = await this.service.createWithNotification(dto);
             return {
                 status: 'ok',
                 owner

@@ -10,7 +10,7 @@ import { RedisSocketEventSendDTO } from './dto/socket-event-send.dto';
 
 const REDIS_SOCKET_EVENT_SEND_NAME = 'REDIS_SOCKET_EVENT_SEND_NAME';
 const REDIS_SOCKET_EVENT_EMIT_ALL_NAME = 'REDIS_SOCKET_EVENT_EMIT_ALL_NAME';
-const REDIS_SOCKET_EVENT_EMIT_AUTHENTICATED_NAME = 'REDIS_SOCKET_EVENT_EMIT_AUTHENTICATED_NAME';
+const REDIS_SOCKET_EVENT_EMIT_SAME_NAME = 'REDIS_SOCKET_EVENT_EMIT_SAME_NAME';
 
 @Injectable()
 export class RedisPropagatorService {
@@ -31,8 +31,8 @@ export class RedisPropagatorService {
       .subscribe();
 
     this.redisService
-      .fromEvent(REDIS_SOCKET_EVENT_EMIT_AUTHENTICATED_NAME)
-      .pipe(tap(this.consumeEmitToAuthenticatedEvent))
+      .fromEvent(REDIS_SOCKET_EVENT_EMIT_SAME_NAME)
+      .pipe(tap(this.consumeSendEventForSameUser))
       .subscribe();
   }
 
@@ -51,13 +51,48 @@ export class RedisPropagatorService {
       .forEach((socket) => socket.emit(event, data));
   };
 
+  private consumeSendEventForSameUser = (eventInfo: RedisSocketEventSendDTO): void => {
+    const { userId, event, data } = eventInfo;
+
+    return this.socketStateService
+      .get(userId)
+      .forEach((socket) => socket.emit(event, data));
+  };
+
   private consumeEmitToAllEvent = (
     eventInfo: RedisSocketEventEmitDTO,
   ): void => {
     this.socketServer.emit(eventInfo.event, eventInfo.data);
   };
 
-  private consumeEmitToAuthenticatedEvent = (
+  // envia a todos los usuarios con mismo id menos al que emite
+  public propagateEvent(eventInfo: RedisSocketEventSendDTO): boolean {
+    this.redisService.publish(
+      REDIS_SOCKET_EVENT_SEND_NAME,
+      eventInfo
+    );
+    return true;
+  }
+
+  // envia a todos los usuarios con mismo id INCLUYENDO al que emite
+  public emitToAllSocketForUser(eventInfo: RedisSocketEventSendDTO): boolean {
+    this.redisService.publish(
+      REDIS_SOCKET_EVENT_EMIT_SAME_NAME,
+      eventInfo,
+    );
+    return true;
+  }
+
+  // notifica a todos los sockets
+  public emitToAll(eventInfo: RedisSocketEventEmitDTO): boolean {
+    this.redisService.publish(
+      REDIS_SOCKET_EVENT_EMIT_ALL_NAME,
+      eventInfo
+    );
+    return true;
+  }
+
+  /*   private consumeEmitToAuthenticatedEvent = (
     eventInfo: RedisSocketEventEmitDTO,
   ): void => {
     const { event, data } = eventInfo;
@@ -65,30 +100,5 @@ export class RedisPropagatorService {
     return this.socketStateService
       .getAll()
       .forEach((socket) => socket.emit(event, data));
-  };
-
-  public propagateEvent(eventInfo: RedisSocketEventSendDTO): boolean {
-/*     if (!eventInfo.userId) {
-      return false;
-    } */
-
-    this.redisService.publish(REDIS_SOCKET_EVENT_SEND_NAME, eventInfo);
-
-    return true;
-  }
-
-  public emitToAuthenticated(eventInfo: RedisSocketEventEmitDTO): boolean {
-    this.redisService.publish(
-      REDIS_SOCKET_EVENT_EMIT_AUTHENTICATED_NAME,
-      eventInfo,
-    );
-
-    return true;
-  }
-
-  public emitToAll(eventInfo: RedisSocketEventEmitDTO): boolean {
-    this.redisService.publish(REDIS_SOCKET_EVENT_EMIT_ALL_NAME, eventInfo);
-
-    return true;
-  }
+  }; */
 }
